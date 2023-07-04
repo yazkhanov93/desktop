@@ -16,8 +16,8 @@ c.execute('CREATE TABLE IF NOT EXISTS user (username TEXT NOT NULL PRIMARY KEY,p
 db.commit()
 db.close()
 
-url = 'http://127.0.0.1:8000/api' 
-# url = "http://km-parts.com.tm/api"
+# url = 'http://127.0.0.1:8000/api' 
+url = "http://km-parts.com.tm/api"
 # main Class
 class main:
     def __init__(self, master):
@@ -111,8 +111,8 @@ class main:
                 # print("Go...")
                 # print(dt)
                 upload = requests.post(url=url + "/upload-product/", data=json_data, headers={"Content-Type":"application/json; charset=utf-8"})
-        except:
-            ms.showerror(title="Ошибка", message="Имена столбцов не совпадают или проверьте подключение к интернету")
+        except Exception as e:
+            ms.showerror(title="Ошибка", message=e)
     
     def openfile2(self):
         self.filename2 = filedialog.askopenfilename(initialdir='', title='Выберите Файл')
@@ -159,8 +159,8 @@ class main:
                 # print("Go...")
                 # print(json_data)
                 upload = requests.post(url=url + "/upload-comp/", data=json_data, headers={"Content-Type":"application/json; charset=utf-8"})
-        except:
-            ms.showerror(title="Ошибка", message="Имена столбцов не совпадают или проверьте подключение к интернету")
+        except Exception as e:
+            ms.showerror(title="Ошибка", message=e)
     # Login Function
     def login(self):
         # Establish Connection
