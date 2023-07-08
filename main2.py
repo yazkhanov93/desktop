@@ -16,8 +16,8 @@ c.execute('CREATE TABLE IF NOT EXISTS user (username TEXT NOT NULL PRIMARY KEY,p
 db.commit()
 db.close()
 
-# url = 'http://127.0.0.1:8000/api' 
-url = "http://km-parts.com.tm/api"
+url = 'http://127.0.0.1:8000/api' 
+# url = "http://km-parts.com.tm/api"
 # main Class
 class main:
     def __init__(self, master):
@@ -110,6 +110,7 @@ class main:
                     json_data = json.dumps(j, ensure_ascii=True)
                 # print("Go...")
                 # print(dt)
+                update = requests.put(url=url + "/upload-product/", data=json_data, headers={"Content-Type":"application/json; charset=utf-8"})
                 upload = requests.post(url=url + "/upload-product/", data=json_data, headers={"Content-Type":"application/json; charset=utf-8"})
         except Exception as e:
             ms.showerror(title="Ошибка", message=e)
