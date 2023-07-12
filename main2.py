@@ -249,45 +249,48 @@ class main:
         self.label.configure(text=self.filename3.split("/")[-1])
 
     def uploadfebest(self):
-        df = pd.read_excel(self.filename4)
-        df = df[["Наименование", "Дополнительное Наименование","модель","год","Мотор","Company Part Number","Original Part Number","кузов","Размер"]]
-        df = df.dropna(how="all")
-        df = df.fillna("")
-        df = df.rename(columns={"Наименование":"title", "Дополнительное Наименование":"description","модель":"model","год":"years","Мотор":"motor","Company Part Number":"company_part_number","Original Part Number":"original_part_number","кузов":"cascade","Размер":"size"})
-        df = df.astype({"title":"str", "description":"str","model":"str","motor":"str","years":"str","company_part_number":"str","original_part_number":"str","cascade":"str","size":"str"})
-        df["company_part_number"] = df["company_part_number"].str.replace("-| |:|#|;|$|_","")
-        df["company_part_number"] = df["company_part_number"].str.upper()
-        df["original_part_number"] = df["original_part_number"].str.replace("-| |:|#|;|$|_","")
-        df["original_part_number"] = df["original_part_number"].str.upper()
-        df["size"] = df["size"].str.replace("-|/|:|#|_","*")
-        df["motor"] = df["motor"].str.replace("  ", " ")
+        try:
+            df = pd.read_excel(self.filename4)
+            df = df[["Наименование", "Дополнительное Наименование","модель","год","Мотор","Company Part Number","Original Part Number","кузов","Размер"]]
+            df = df.dropna(how="all")
+            df = df.fillna("")
+            df = df.rename(columns={"Наименование":"title", "Дополнительное Наименование":"description","модель":"model","год":"years","Мотор":"motor","Company Part Number":"company_part_number","Original Part Number":"original_part_number","кузов":"cascade","Размер":"size"})
+            df = df.astype({"title":"str", "description":"str","model":"str","motor":"str","years":"str","company_part_number":"str","original_part_number":"str","cascade":"str","size":"str"})
+            df["company_part_number"] = df["company_part_number"].str.replace("-| |:|#|;|$|_","")
+            df["company_part_number"] = df["company_part_number"].str.upper()
+            df["original_part_number"] = df["original_part_number"].str.replace("-| |:|#|;|$|_","")
+            df["original_part_number"] = df["original_part_number"].str.upper()
+            df["size"] = df["size"].str.replace("-|/|:|#|_","*")
+            df["motor"] = df["motor"].str.replace("  ", " ")
 
-        df = df.to_dict(orient="records")
-        for i in df:
-            try:
-                year_start = int(i["years"].split("-")[0])
-                year_end = int(i["years"].split("-")[-1])
-                i.update({"year_start":year_start, "year_end":year_end})
-                del i["years"]
-            except:
-                year_start = 0
-                year_end = 0
-                i.update({"year_start":year_start, "year_end":year_end})
-                del i["years"]
-        febest = requests.get(url=url + "/febest-download/")
-        febest = febest.json()
-        for i in df[:]:
-            if i in febest:
-                df.remove(i)
-        i = 0
-        dt = [] 
-        while i < len(df):
-            dt.append(df[i:i+100])
-            i+=100
-            for j in dt:
-                json_data = json.dumps(j, ensure_ascii=True)    
-            upload = requests.post(url=url + "/febest/", data=json_data, headers={"Content-Type":"application/json; charset=utf-8"})
-        # print(df)
+            df = df.to_dict(orient="records")
+            for i in df:
+                try:
+                    year_start = int(i["years"].split("-")[0])
+                    year_end = int(i["years"].split("-")[-1])
+                    i.update({"year_start":year_start, "year_end":year_end})
+                    del i["years"]
+                except:
+                    year_start = 0
+                    year_end = 0
+                    i.update({"year_start":year_start, "year_end":year_end})
+                    del i["years"]
+            febest = requests.get(url=url + "/febest-download/")
+            febest = febest.json()
+            for i in df[:]:
+                if i in febest:
+                    df.remove(i)
+            i = 0
+            dt = [] 
+            while i < len(df):
+                dt.append(df[i:i+100])
+                i+=100
+                for j in dt:
+                    json_data = json.dumps(j, ensure_ascii=True)    
+                upload = requests.post(url=url + "/febest/", data=json_data, headers={"Content-Type":"application/json; charset=utf-8"})
+            # print(df)
+        except Exception as e:
+            ms.showerror(title="Ошибка", message=e)
 
     def openfile4(self):
         self.filename4 = filedialog.askopenfilename(initialdir='', title='Выберите Файл')
