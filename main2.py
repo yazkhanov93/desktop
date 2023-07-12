@@ -130,6 +130,7 @@ class main:
             df = df.fillna("")
             df = df.rename(columns={"наименование":"title","партномер_а":"original_part_number", "модель_а":"model","год_а":"years","мотор_а":"motor","кузов_а":"cascade","код":"product","дополнительно":"description"})
             df = df.astype({"title":"str","original_part_number":"str","model":"str","motor":"str","years":"str","cascade":"str","product":"str"})
+            df["motor"] = df["motor"].str.replace("  ", " ")
             df = df.to_dict(orient="records")
             for i in df:
                 if i["years"].isdigit() or i["years"].__contains__("-"):
