@@ -16,8 +16,8 @@ c.execute('CREATE TABLE IF NOT EXISTS user (username TEXT NOT NULL PRIMARY KEY,p
 db.commit()
 db.close()
 
-# url = 'http://127.0.0.1:8000/api' 
-url = "http://km-parts.com.tm/api"
+# urLink = 'http://127.0.0.1:8000/' 
+urLink = "https://km-aparts.com/"
 # main Class
 class main:
     def __init__(self, master):
@@ -34,9 +34,6 @@ class main:
         self.label = ttk.Label()
         self.label.grid(column=1, row=6)
         self.label.configure(text=self.filename1.split("/")[-1])
-    
-    # def update(self, data):
-        
 
     def uploadProduct(self):
         try:
@@ -110,18 +107,11 @@ class main:
                     json_data = json.dumps(j, ensure_ascii=True)
                 
                 upload = requests.post(url=url + "/upload-product/", data=json_data, headers={"Content-Type":"application/json; charset=utf-8"})
-                update = requests.put(url=url + "/upload-product/", data=json_data, headers={"Content-Type":"application/json; charset=utf-8"})
+                # update = requests.put(url=url + "/upload-product/", data=json_data, headers={"Content-Type":"application/json; charset=utf-8"})
             # print(len(df))
         except Exception as e:
             ms.showerror(title="Ошибка", message=e)
     
-    def openfile2(self):
-        self.filename2 = filedialog.askopenfilename(initialdir='', title='Выберите Файл')
-        self.label = ttk.Label()
-        self.label.grid(column=2, row=6)
-        self.label.configure(text=self.filename2.split("/")[-1])
-
-
     def uploadComp(self):
         try:
             df = pd.read_excel(self.filename2)
@@ -163,7 +153,14 @@ class main:
         except Exception as e:
             ms.showerror(title="Ошибка", message=e)
 
-    def uploadDubai(self):
+    
+    def openfile2(self):
+        self.filename2 = filedialog.askopenfilename(initialdir='', title='Выберите Файл')
+        self.label = ttk.Label()
+        self.label.grid(column=2, row=6)
+        self.label.configure(text=self.filename2.split("/")[-1])
+
+    def uploaddubai(self):
         try:
             df = pd.read_excel(self.filename3)
             df = df[["Код",'Наименование', 'Дополнительное Наименование', 'Модель',
@@ -234,65 +231,17 @@ class main:
                 for j in dt:
                     json_data = json.dumps(j, ensure_ascii=True)
                 
-                upload = requests.post(url=url + "/upload-dubai/", data=json_data, headers={"Content-Type":"application/json; charset=utf-8"})
-                update = requests.put(url=url + "/upload-dubai/", data=json_data, headers={"Content-Type":"application/json; charset=utf-8"})
-            # print(len(df))
+                # upload = requests.post(url=url + "/upload-dubai/", data=json_data, headers={"Content-Type":"application/json; charset=utf-8"})
+                # update = requests.put(url=url + "/upload-product/", data=json_data, headers={"Content-Type":"application/json; charset=utf-8"})
+            print(len(df))
         except Exception as e:
             ms.showerror(title="Ошибка", message=e)
-    
-    
+
     def openfile3(self):
         self.filename3 = filedialog.askopenfilename(initialdir='', title='Выберите Файл')
-        self.label = ttk.Label()
+        self.label = Label()
         self.label.grid(column=3, row=6)
         self.label.configure(text=self.filename3.split("/")[-1])
-
-    def uploadfebest(self):
-        df = pd.read_excel(self.filename4)
-        df = df[["Наименование", "Дополнительное Наименование","модель","год","Мотор","Company Part Number","Original Part Number","кузов","Размер"]]
-        df = df.dropna(how="all")
-        df = df.fillna("")
-        df = df.rename(columns={"Наименование":"title", "Дополнительное Наименование":"description","модель":"model","год":"years","Мотор":"motor","Company Part Number":"company_part_number","Original Part Number":"original_part_number","кузов":"cascade","Размер":"size"})
-        df = df.astype({"title":"str", "description":"str","model":"str","motor":"str","years":"str","company_part_number":"str","original_part_number":"str","cascade":"str","size":"str"})
-        df["company_part_number"] = df["company_part_number"].str.replace("-| |:|#|;|$|_","")
-        df["company_part_number"] = df["company_part_number"].str.upper()
-        df["original_part_number"] = df["original_part_number"].str.replace("-| |:|#|;|$|_","")
-        df["original_part_number"] = df["original_part_number"].str.upper()
-        df["size"] = df["size"].str.replace("-|/|:|#|_","*")
-        df["motor"] = df["motor"].str.replace("  ", " ")
-
-        df = df.to_dict(orient="records")
-        for i in df:
-            try:
-                year_start = int(i["years"].split("-")[0])
-                year_end = int(i["years"].split("-")[-1])
-                i.update({"year_start":year_start, "year_end":year_end})
-                del i["years"]
-            except:
-                year_start = 0
-                year_end = 0
-                i.update({"year_start":year_start, "year_end":year_end})
-                del i["years"]
-        febest = requests.get(url=url + "/febest-download/")
-        febest = febest.json()
-        for i in df[:]:
-            if i in febest:
-                df.remove(i)
-        i = 0
-        dt = [] 
-        while i < len(df):
-            dt.append(df[i:i+100])
-            i+=100
-            for j in dt:
-                json_data = json.dumps(j, ensure_ascii=True)    
-            upload = requests.post(url=url + "/febest/", data=json_data, headers={"Content-Type":"application/json; charset=utf-8"})
-        # print(df)
-
-    def openfile4(self):
-        self.filename4 = filedialog.askopenfilename(initialdir='', title='Выберите Файл')
-        self.label = ttk.Label()
-        self.label.grid(column=4, row=6)
-        self.label.configure(text=self.filename4.split("/")[-1])
 
 
     # Login Function
@@ -354,14 +303,7 @@ class main:
             self.label = Label(text="Загрузить Дубай", font=("Arial, 16")).grid(column=3, row=3, padx=30, pady=30)
             self.button3 = Button(text="Выберите Файл", command=self.openfile3, font=("Arial, 11"), width=12).grid(
                 column=3, row=4, padx=10, pady=30)
-            self.button3_3 = Button(text="Загрузить", font=("Arial, 11"), width=12, command=self.uploadDubai).grid(column=3,
-                                                                                                               row=5,
-                                                                                                               padx=10,
-                                                                                                               pady=10)
-            self.label = Label(text="Загрузить Febest", font=("Arial, 16")).grid(column=4, row=3, padx=30, pady=30)
-            self.button4 = Button(text="Выберите Файл", command=self.openfile4, font=("Arial, 11"), width=12).grid(
-                column=4, row=4, padx=10, pady=30)
-            self.button4_4 = Button(text="Загрузить", font=("Arial, 11"), width=12, command=self.uploadfebest).grid(column=4,
+            self.button3_3 = Button(text="Загрузить", font=("Arial, 11"), width=12, command=self.uploaddubai).grid(column=3,
                                                                                                                row=5,
                                                                                                                padx=10,
                                                                                                                pady=10)
@@ -389,39 +331,104 @@ class main:
             ms.showerror('Oops!', 'Имя или пароль не совпадают.')
 
     def downloadOrders(self):
-        # try:
+        try:
             self.year_from = self.year.get()
             self.month_from = self.month.get()
             self.status2 = self.status.get()
             date = str(self.year_from)+"-"+str(self.month_numbers[self.month_from])
             xlfilename = ("Список_Заказов_" + self.status2 + "_" + date + ".xlsx")
-            orderItems = requests.get(url=url + "/order-items")
-            orderItems = orderItems.json()
+            orders_list = requests.get(url=urLink + "api/order/order-list/", timeout=60)
+            orders_list = orders_list.json()
+            product_list = requests.get(url=urLink + "api/products/product-post/", timeout=60)
+            product_list = product_list.json()
+            part_model = requests.get(url=urLink + "api/products/part-model-list/", timeout=60)
+            part_model = part_model.json()
+            customers = requests.get(url=urLink + "api/user/users-list/", timeout=60)
+            customers = customers.json()
             order_list = []
-            for i in orderItems:
-                order_list.append({"order_id":i["id"], "user":i["order"]["user"]["username"], 
-                "order_status":i["order"]["order_status"], "date":i["order"]["updatedAt"].split("T")[0], "total_price":i["order"]["totalPrice"], 
-                "product":i["product"]["code"], "title":i["product"]["title"], "model":i["product"]["model"], 
-                "year_start":i["product"]["year_start"], "year_end":i["product"]["year_end"], "motor":i["product"]["motor"], "quantity":i["quantity"]})
-            orders = []
-            for i in order_list:
-                if i["date"][:7] == date:
+            for i in orders_list:
+                if i["order_status"]:
                     if i["order_status"] == self.status2:
-                        orders.append(i)
-            if len(orders) > 0:           
-                df = pd.DataFrame(orders)
-                df = df.rename(columns={"order_id":"Номер заказа","user":"пользователь", "order_status":"статус","date":"дата заказа", "total_price":"цена", "product":"товар",
-                "title":"наименование","model":"модель",
-                "year_start":"год начала", "year_end":"год окончание", "motor":"мотор", "quantity":"количество"})
-                df = df.fillna("")
-                # print(df)
-                df = df.to_excel(xlfilename, sheet_name="orders", index=False)
+                        if i["created_at"][0:7] == date:
+                            order_list.append(i)
+            for i in order_list:
+                for j in customers:
+                    if i["customer_id"] == j["id"]:
+                        i["customer_id"] = j["username"]
+            for i in order_list:
+                i.update({"Order Number": i["id"], "Customer": i["customer_id"]})
+                del i["customer_id"], i["id"]
+            order = []
+            for i in order_list:
+                order.append(i)
+                for j in i["products"]:
+                    order.append(j)
+                del i["products"]
+            for i in order:
+                if "id" in i:
+                    del i["id"]
+                if "order_id" in i:
+                    del i["order_id"]
+                if "created_at" in i:
+                    i["created_at"] = i["created_at"][:10]
+                if "updated_at" in i:
+                    i["updated_at"] = i["updated_at"][:10]
+
+            order_list = pd.DataFrame(order)
+            order = order_list.rename(
+                columns={"created_at": "Дата заказа", "updated_at": "Обработка заказа", "order_status":"Статус Заказа","Order Number": "Номер заказа",
+                         "Customer": "Номер клиента", "quantity": "Количество", "price": "Цена",
+                         "product_id": "Код Продукта"})
+            order = order.fillna("0")
+            order = order.to_dict(orient="records")
+            for i in order:
+                for j in product_list:
+                    if i["Код Продукта"] == j["code"]:
+                        i.update({"Названия": j["title"], "Модель": j["part_model"], "Company Part Number": j["company_pn"],
+                                  "Original Part Number": j["original_pn"]})
+            for i in order:
+                if i["Дата заказа"] == "0":
+                    i["Дата заказа"] = ""
+                if i["Обработка заказа"] == "0":
+                    i["Обработка заказа"] = ""
+                if i["Статус Заказа"] == "0":
+                    i["Статус Заказа"] = ""
+                if i["Номер заказа"] == "0":
+                    i["Номер заказа"] = ""
+                else:
+                    i["Номер заказа"] = int(i["Номер заказа"])
+                if i["Номер клиента"] == "0":
+                    i["Номер клиента"] = ""
+                if i["Количество"] == "0":
+                    i["Количество"] = ""
+                else:
+                    i["Количество"] = int(i["Количество"])
+                if i["Цена"] == "0":
+                    i["Цена"] = ""
+                if i["Код Продукта"] == "0":
+                    i["Код Продукта"] = ""
+            for i in order:
+                for j in part_model:
+                    if "Модель" in i:
+                        if i["Модель"] == j["id"]:
+                            i["Модель"] = j["title"]
+                            i.update({"year_start": j["year_start"], "year_end": j["year_end"], "Мотор": j["motor"]})
+            for i in order:
+                if "year_start" in i:
+                    if "year_end" in i:
+                        years = str(i["year_start"]) + "-" + str(i["year_end"])
+                        i.update({"Год": years})
+                        del i["year_start"], i["year_end"]
+            if len(order) > 0:
+                order = pd.DataFrame(order)
+                order = order.fillna("")
+                # print(xlfilename)
+                order = order.to_excel(xlfilename, sheet_name="orders", index=False)
                 ms.showinfo(title="Cохранено как ", message=xlfilename)
             else:
                 ms.showinfo(message="Нет заказов")
-
-        # except:
-        #     ms.showwarning(message="проверьте подключение к интернету")
+        except:
+            ms.showwarning(message="проверьте подключение к интернету")
 
 
     def log(self):
@@ -448,6 +455,6 @@ if __name__ == '__main__':
     root = Tk()
     root.title('KM-Parts')
     # root.config(bg="#008080")
-    root.geometry('1100x500')
+    root.geometry('1000x500')
     main(root)
     root.mainloop()
