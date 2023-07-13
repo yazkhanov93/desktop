@@ -89,18 +89,13 @@ class main:
             # print(df)
             df = df.to_dict(orient="records")
             for i in df:
-                if i["years"].isdigit() and i["years"].__contains__("-"):
-                    year_start =int(i["years"].split("-")[0])
-                    year_end = int(i["years"].split("-")[-1])
-                elif i["years"].isdigit():
-                    year_start = int(i["years"])
-                    year_end = int(i["years"])
-                else:
-                    year_start = 0
-                    year_end = 0
+                if i["years"].isdigit() or i["years"].__contains__("-"):
+                    year_start = i["years"].split("-")[0]
+                    year_end = i["years"].split("-")[-1]
+                year_start = int(year_start)
+                year_end = int(year_end)
                 i.update({"year_start":year_start, "year_end":year_end})
                 del i["years"]
-            
             i = 0
             dt = [] 
             while i < len(df):
@@ -111,7 +106,7 @@ class main:
                 
                 upload = requests.post(url=url + "/upload-product/", data=json_data, headers={"Content-Type":"application/json; charset=utf-8"})
                 update = requests.put(url=url + "/upload-product/", data=json_data, headers={"Content-Type":"application/json; charset=utf-8"})
-            # print(len(df))
+            print(df)
         except Exception as e:
             ms.showerror(title="Ошибка", message=e)
     
@@ -265,16 +260,13 @@ class main:
 
             df = df.to_dict(orient="records")
             for i in df:
-                try:
-                    year_start = int(i["years"].split("-")[0])
-                    year_end = int(i["years"].split("-")[-1])
-                    i.update({"year_start":year_start, "year_end":year_end})
-                    del i["years"]
-                except:
-                    year_start = 0
-                    year_end = 0
-                    i.update({"year_start":year_start, "year_end":year_end})
-                    del i["years"]
+                if i["years"].isdigit() or i["years"].__contains__("-"):
+                    year_start = i["years"].split("-")[0]
+                    year_end = i["years"].split("-")[-1]
+                year_start = int(year_start)
+                year_end = int(year_end)
+                i.update({"year_start":year_start, "year_end":year_end})
+                del i["years"]
             febest = requests.get(url=url + "/febest-download/")
             febest = febest.json()
             for i in df[:]:
@@ -390,10 +382,10 @@ class main:
 
             # self.head['text'] =self.openfile1.filename1
         else:
-            ms.showerror('Oops!', 'Имя или пароль не совпадают.')
+            ms.showerror(title="Ошибка", message=e)
 
     def downloadOrders(self):
-        # try:
+        try:
             self.year_from = self.year.get()
             self.month_from = self.month.get()
             self.status2 = self.status.get()
@@ -424,9 +416,8 @@ class main:
             else:
                 ms.showinfo(message="Нет заказов")
 
-        # except:
-        #     ms.showwarning(message="проверьте подключение к интернету")
-
+        except Exception as e:
+            ms.showerror(title="Ошибка", message=e)
 
     def log(self):
         self.username.set('')
