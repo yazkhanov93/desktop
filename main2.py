@@ -56,14 +56,15 @@ class main:
             df["quantity"] = df["quantity"].replace("", 0)
             df["main"] = df["main"].replace("", 0)
         
+
             df = df.astype({"code":"str","title":"str","description":"str","model":"str","years":"str","motor":"str","size":"str","company_name":"str", "company_part_number":"str", "original_part_number":"str","weight":"str","cascade":"str" , "quantity":"int","main":"int"})
+            df = df.assign(year_start="", year_end="")
+            df[["year_start","year_end"]] = df["years"].str.split("-", 1, expand=True)
+            df = df.drop("years", axis=1)
             
             df["serial"] = df["serial"].str.replace("-","")
             df["serial"] = df["serial"].fillna("")
             df["serial"] = df["serial"].str.upper()
-
-            # df["years"] = df["years"].str.replace("",0)
-            
 
             df["company_part_number"] = df["company_part_number"].str.replace("-| |:|#|;|$|_","")
             df["company_part_number"] = df["company_part_number"].str.upper()
@@ -86,16 +87,15 @@ class main:
             df["is_visible_vip"] = df["is_visible_vip"].replace("", False)
 
             df["motor"] = df["motor"].str.replace("  ", " ")
-            # print(df)
+            df = df.fillna(0)
+
             df = df.to_dict(orient="records")
             for i in df:
-                if i["years"].isdigit() or i["years"].__contains__("-"):
-                    year_start = i["years"].split("-")[0]
-                    year_end = i["years"].split("-")[-1]
-                year_start = int(year_start)
-                year_end = int(year_end)
-                i.update({"year_start":year_start, "year_end":year_end})
-                del i["years"]
+                if i["year_start"] == "":
+                    i["year_start"] = 0
+                i["year_start"] = int(i["year_start"])
+                i["year_end"] = int(i["year_end"])
+            
             i = 0
             dt = [] 
             while i < len(df):
@@ -106,7 +106,7 @@ class main:
                 
                 upload = requests.post(url=url + "/upload-product/", data=json_data, headers={"Content-Type":"application/json; charset=utf-8"})
                 update = requests.put(url=url + "/upload-product/", data=json_data, headers={"Content-Type":"application/json; charset=utf-8"})
-            print(df)
+            # print(df)
         except Exception as e:
             ms.showerror(title="Ошибка", message=e)
     
@@ -118,7 +118,7 @@ class main:
 
 
     def uploadComp(self):
-        try:
+        # try:
             df = pd.read_excel(self.filename2)
             df = df[["наименование","партномер_а", "модель_а","год_а", 'мотор_а','кузов_а', 'код','дополнительно']]
             df = df.dropna(how="all")
@@ -126,8 +126,24 @@ class main:
             df = df.rename(columns={"наименование":"title","партномер_а":"original_part_number", "модель_а":"model","год_а":"years","мотор_а":"motor","кузов_а":"cascade","код":"product","дополнительно":"description"})
             df = df.astype({"title":"str","original_part_number":"str","model":"str","motor":"str","years":"str","cascade":"str","product":"str"})
             df["motor"] = df["motor"].str.replace("  ", " ")
+            
+            # df = df.assign(year_start="", year_end="")
+            # df[["year_start","year_end"]] = df["years"].str.split("-", 1, expand=True)
+            # df = df.drop("years", axis=1)
+            # df = df.fillna(0)
+
+            # df = df.to_dict(orient="records")
+            # for i in df:
+            #     if i["year_start"] == "":
+            #         i["year_start"] = 0
+            # for i in df:
+            #     i["year_start"] = int(i["year_start"])
+            #     i["year_end"] = int(i["year_end"])
+
             df = df.to_dict(orient="records")
             for i in df:
+                year_start = 0
+                year_end = 0
                 if i["years"].isdigit() or i["years"].__contains__("-"):
                     year_start = i["years"].split("-")[0]
                     year_end = i["years"].split("-")[-1]
@@ -146,6 +162,7 @@ class main:
                     pass
                 else:
                     dt.append(i)
+            print(dt)
             i = 0
             c=[]
             while i < len(dt):
@@ -155,9 +172,9 @@ class main:
                     json_data = json.dumps(j, ensure_ascii=True)
                 # print("Go...")
                 # print(json_data)
-                upload = requests.post(url=url + "/upload-comp/", data=json_data, headers={"Content-Type":"application/json; charset=utf-8"})
-        except Exception as e:
-            ms.showerror(title="Ошибка", message=e)
+                # upload = requests.post(url=url + "/upload-comp/", data=json_data, headers={"Content-Type":"application/json; charset=utf-8"})
+        # except Exception as e:
+        #     ms.showerror(title="Ошибка", message=e)
 
     def uploadDubai(self):
         try:
@@ -210,6 +227,8 @@ class main:
             # print(df)
             df = df.to_dict(orient="records")
             for i in df:
+                # year_start = 0
+                # year_end = 0
                 if i["years"].isdigit() and i["years"].__contains__("-"):
                     year_start =int(i["years"].split("-")[0])
                     year_end = int(i["years"].split("-")[-1])
@@ -232,7 +251,7 @@ class main:
                 
                 upload = requests.post(url=url + "/upload-dubai/", data=json_data, headers={"Content-Type":"application/json; charset=utf-8"})
                 update = requests.put(url=url + "/upload-dubai/", data=json_data, headers={"Content-Type":"application/json; charset=utf-8"})
-            # print(len(df))
+                # print(df)
         except Exception as e:
             ms.showerror(title="Ошибка", message=e)
     
@@ -260,6 +279,8 @@ class main:
 
             df = df.to_dict(orient="records")
             for i in df:
+                year_start = 0
+                year_end = 0
                 if i["years"].isdigit() or i["years"].__contains__("-"):
                     year_start = i["years"].split("-")[0]
                     year_end = i["years"].split("-")[-1]
