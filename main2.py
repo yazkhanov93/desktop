@@ -41,21 +41,12 @@ class main:
     def uploadProduct(self):
         try:
             df = pd.read_excel(self.filename1)
-            df = df[["Код",'Наименование', 'Дополнительное Наименование', 'Модель',
-            'Год', 'Мотор', 'Размер', 'Компания', 'Made_IN',
-            'Made_IN на экран', 'Цена _Dollar', 'vip регистрац', 'регистрац',
-            'Остаток_кол-во', 'Company Part Number',
-            'Original Part Number', 'Вес_кг', 'Кузов', 'ЕД', 'ОПТ_Цена _Dollar','main','Серийный_№']]
+            df = df[["Код",'Наименование', 'Дополнительное Наименование', 'Модель','Год', 'Мотор', 'Размер', 'Компания', 'Made_IN', 'Made_IN на экран', 'Цена _Dollar', 'Остаток_кол-во', 'Company Part Number', 'Original Part Number', 'Вес_кг', 'Кузов', 'ЕД', 'ОПТ_Цена _Dollar','main','Серийный_№']]
             df = df.dropna(how="all")
             df = df.fillna("")
-            df = df.rename(columns={"Код":'code','Наименование':'title', 'Дополнительное Наименование':'description', 'Модель':'model',
-            'Год':'years', 'Мотор':'motor', 'Размер':'size', 'Компания':'company_name', 'Made_IN':'made_in',
-            'Made_IN на экран':'made_in_visible', 'Цена _Dollar':'price', 'vip регистрац':'is_visible_vip', 'регистрац':'is_visible_all',
-            'Остаток_кол-во':'quantity', 'Company Part Number':'company_part_number',
-            'Original Part Number':'original_part_number', 'Вес_кг':'weight', 'Кузов':'cascade', 'ЕД':'unit', 'ОПТ_Цена _Dollar':'wholeSalePrice','Серийный_№':"serial"})
+            df = df.rename(columns={"Код":'code','Наименование':'title', 'Дополнительное Наименование':'description', 'Модель':'model','Год':'years', 'Мотор':'motor', 'Размер':'size', 'Компания':'company_name', 'Made_IN':'made_in','Made_IN на экран':'made_in_visible', 'Цена _Dollar':'price', 'Остаток_кол-во':'quantity', 'Company Part Number':'company_part_number','Original Part Number':'original_part_number', 'Вес_кг':'weight', 'Кузов':'cascade', 'ЕД':'unit', 'ОПТ_Цена _Dollar':'wholeSalePrice','Серийный_№':"serial"})
             df["quantity"] = df["quantity"].replace("", 0)
             df["main"] = df["main"].replace("", 0)
-        
 
             df = df.astype({"code":"str","title":"str","description":"str","model":"str","years":"str","motor":"str","size":"str","company_name":"str", "company_part_number":"str", "original_part_number":"str","weight":"str","cascade":"str" , "quantity":"int","main":"int"})
             df = df.assign(year_start="", year_end="")
@@ -72,24 +63,19 @@ class main:
             df["original_part_number"] = df["original_part_number"].str.replace("-| |:|#|;|$|_","")
             df["original_part_number"] = df["original_part_number"].str.upper()
 
-            df["size"] = df["size"].str.replace("-|/|:|#|_","*")
-
             df["made_in_visible"] = df["made_in_visible"].replace(1, True)
             df["made_in_visible"] = df["made_in_visible"].replace(0, False)
             df["made_in_visible"] = df["made_in_visible"].replace("", False)
 
-            df["is_visible_all"] = df["is_visible_all"].replace(1, True)
-            df["is_visible_all"] = df["is_visible_all"].replace(0, False)
-            df["is_visible_all"] = df["is_visible_all"].replace("", False)
-
-            df["is_visible_vip"] = df["is_visible_vip"].replace(1, True)
-            df["is_visible_vip"] = df["is_visible_vip"].replace(0, False)
-            df["is_visible_vip"] = df["is_visible_vip"].replace("", False)
+            df["size"] = df["size"].str.replace("-|/|:|#|_","*")
 
             df["motor"] = df["motor"].str.replace("  ", " ")
             df = df.fillna(0)
 
             df = df.to_dict(orient="records")
+            for i in df:
+                if i["price"] == "":
+                    i["price"] = 0
             for i in df:
                 if i["year_start"] == "":
                     i["year_start"] = 0
@@ -179,18 +165,10 @@ class main:
     def uploadDubai(self):
         try:
             df = pd.read_excel(self.filename3)
-            df = df[["Код",'Наименование', 'Дополнительное Наименование', 'Модель',
-            'Год', 'Мотор', 'Размер', 'Компания', 'Made_IN',
-            'Made_IN на экран', 'Цена _Dollar', 'vip регистрац', 'регистрац',
-            'Остаток_кол-во', 'Company Part Number',
-            'Original Part Number', 'Вес_кг', 'Кузов', 'ЕД', 'ОПТ_Цена _Dollar','main','Серийный_№']]
+            df = df[["Код",'Наименование', 'Дополнительное Наименование', 'Модель','Год', 'Мотор', 'Размер', 'Компания', 'Made_IN','Made_IN на экран', 'Цена _Dollar','Остаток_кол-во', 'Company Part Number','Original Part Number', 'Вес_кг', 'Кузов', 'ЕД', 'ОПТ_Цена _Dollar','main','Серийный_№']]
             df = df.dropna(how="all")
             df = df.fillna("")
-            df = df.rename(columns={"Код":'code','Наименование':'title', 'Дополнительное Наименование':'description', 'Модель':'model',
-            'Год':'years', 'Мотор':'motor', 'Размер':'size', 'Компания':'company_name', 'Made_IN':'made_in',
-            'Made_IN на экран':'made_in_visible', 'Цена _Dollar':'price', 'vip регистрац':'is_visible_vip', 'регистрац':'is_visible_all',
-            'Остаток_кол-во':'quantity', 'Company Part Number':'company_part_number',
-            'Original Part Number':'original_part_number', 'Вес_кг':'weight', 'Кузов':'cascade', 'ЕД':'unit', 'ОПТ_Цена _Dollar':'wholeSalePrice','Серийный_№':"serial"})
+            df = df.rename(columns={"Код":'code','Наименование':'title', 'Дополнительное Наименование':'description', 'Модель':'model','Год':'years', 'Мотор':'motor', 'Размер':'size', 'Компания':'company_name', 'Made_IN':'made_in','Made_IN на экран':'made_in_visible', 'Цена _Dollar':'price', 'Остаток_кол-во':'quantity', 'Company Part Number':'company_part_number','Original Part Number':'original_part_number', 'Вес_кг':'weight', 'Кузов':'cascade', 'ЕД':'unit', 'ОПТ_Цена _Dollar':'wholeSalePrice','Серийный_№':"serial"})
             df["quantity"] = df["quantity"].replace("", 0)
             df["main"] = df["main"].replace("", 0)
         
@@ -215,17 +193,12 @@ class main:
             df["made_in_visible"] = df["made_in_visible"].replace(0, False)
             df["made_in_visible"] = df["made_in_visible"].replace("", False)
 
-            df["is_visible_all"] = df["is_visible_all"].replace(1, True)
-            df["is_visible_all"] = df["is_visible_all"].replace(0, False)
-            df["is_visible_all"] = df["is_visible_all"].replace("", False)
-
-            df["is_visible_vip"] = df["is_visible_vip"].replace(1, True)
-            df["is_visible_vip"] = df["is_visible_vip"].replace(0, False)
-            df["is_visible_vip"] = df["is_visible_vip"].replace("", False)
-
             df["motor"] = df["motor"].str.replace("  ", " ")
             # print(df)
             df = df.to_dict(orient="records")
+            for i in df:
+                if i["price"] == "":
+                    i["price"] = 0
             for i in df:
                 # year_start = 0
                 # year_end = 0
