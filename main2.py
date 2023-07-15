@@ -118,13 +118,13 @@ class main:
 
 
     def uploadComp(self):
-        # try:
+        try:
             df = pd.read_excel(self.filename2)
-            df = df[["наименование","партномер_а", "модель_а","год_а", 'мотор_а','кузов_а', 'код','дополнительно']]
+            df = df[["наименование","партномер_а", "модель_а","год_а", 'мотор_а','кузов_а', 'код','дополнительно','Серийный_№']]
             df = df.dropna(how="all")
             df = df.fillna("")
-            df = df.rename(columns={"наименование":"title","партномер_а":"original_part_number", "модель_а":"model","год_а":"years","мотор_а":"motor","кузов_а":"cascade","код":"product","дополнительно":"description"})
-            df = df.astype({"title":"str","original_part_number":"str","model":"str","motor":"str","years":"str","cascade":"str","product":"str"})
+            df = df.rename(columns={"наименование":"title","партномер_а":"original_part_number", "модель_а":"model","год_а":"years","мотор_а":"motor","кузов_а":"cascade","код":"product","дополнительно":"description","Серийный_№":"serial"})
+            df = df.astype({"title":"str","original_part_number":"str","model":"str","motor":"str","years":"str","cascade":"str","product":"str", "serial":"str"})
             df["motor"] = df["motor"].str.replace("  ", " ")
             
             # df = df.assign(year_start="", year_end="")
@@ -162,7 +162,7 @@ class main:
                     pass
                 else:
                     dt.append(i)
-            print(dt)
+            # print(dt[:20])
             i = 0
             c=[]
             while i < len(dt):
@@ -172,9 +172,9 @@ class main:
                     json_data = json.dumps(j, ensure_ascii=True)
                 # print("Go...")
                 # print(json_data)
-                # upload = requests.post(url=url + "/upload-comp/", data=json_data, headers={"Content-Type":"application/json; charset=utf-8"})
-        # except Exception as e:
-        #     ms.showerror(title="Ошибка", message=e)
+                upload = requests.post(url=url + "/upload-comp/", data=json_data, headers={"Content-Type":"application/json; charset=utf-8"})
+        except Exception as e:
+            ms.showerror(title="Ошибка", message=e)
 
     def uploadDubai(self):
         try:
